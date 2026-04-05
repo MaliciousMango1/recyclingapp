@@ -77,7 +77,3 @@ Not an official ACC government site. See [recycleathens.com/about](https://recyc
 ## Contributing
 
 Missing item or wrong instructions? Open an issue or PR.
-
-## License
-
-MIT
