@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { createTRPCRouter } from "~/server/api/trpc";
 import { protectedProcedure } from "~/server/api/admin-auth";
+import { getAIDisposalAdvice } from "~/server/api/ai-fallback";
 
 const disposalCategoryEnum = z.enum([
   "RECYCLE",
@@ -174,6 +175,14 @@ export const adminRouter = createTRPCRouter({
         where: { query: input.query, matched: false, aiFallback: true },
       });
       return { dismissed: true };
+    }),
+
+  // Get AI suggestion for a query (used to pre-fill the promote form)
+  getAISuggestion: protectedProcedure
+    .input(z.object({ query: z.string().min(1).max(200) }))
+    .query(async ({ input }) => {
+      const result = await getAIDisposalAdvice(input.query);
+      return result;
     }),
 
   // ── Materials ──────────────────────────────────────────
