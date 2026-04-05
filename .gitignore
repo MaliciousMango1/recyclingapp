@@ -2,5 +2,6 @@ node_modules/
 .next/
 .env
 .env.local
+docker-compose.yml
 *.tsbuildinfo
 next-env.d.ts
