@@ -16,7 +16,7 @@ export function AdminItemsList() {
 
   const items = api.admin.listItems.useQuery({
     search: search || undefined,
-    category: categoryFilter || undefined,
+    category: (categoryFilter || undefined) as "RECYCLE" | "COMPOST" | "LANDFILL" | "HAZARDOUS" | "SPECIAL_DROPOFF" | "REUSE" | undefined,
     page,
     perPage: 25,
   });
