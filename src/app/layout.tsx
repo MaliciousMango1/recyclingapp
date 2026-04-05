@@ -8,6 +8,9 @@ export const metadata: Metadata = {
   description:
     "Find out how to properly dispose of any item in Athens-Clarke County, Georgia. Search our database or get AI-powered answers for ACC-specific recycling and waste disposal.",
   keywords: ["Athens", "Georgia", "recycling", "waste", "ACC", "disposal", "CHaRM"],
+  icons: {
+    icon: "/favicon.svg",
+  },
 };
 
 export default function RootLayout({
