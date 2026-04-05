@@ -184,4 +184,71 @@ export const itemsRouter = createTRPCRouter({
       showVerifiedDates: showVerifiedDates?.value !== "false",
     };
   }),
+
+  // Public engagement stats for home page
+  getEngagementStats: publicProcedure.query(async ({ ctx }) => {
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    const [totalItems, topSearches, recentItems] = await Promise.all([
+      ctx.db.item.count({ where: { isVerified: true } }),
+
+      // Most searched items this week (only ones that matched)
+      ctx.db.searchLog.groupBy({
+        by: ["resultItemId"],
+        where: {
+          createdAt: { gte: thirtyDaysAgo },
+          matched: true,
+          resultItemId: { not: null },
+        },
+        _count: { resultItemId: true },
+        orderBy: { _count: { resultItemId: "desc" } },
+        take: 5,
+      }),
+
+      // Recently added items
+      ctx.db.item.findMany({
+        where: { isVerified: true },
+        orderBy: { createdAt: "desc" },
+        take: 5,
+        select: {
+          name: true,
+          slug: true,
+          category: true,
+          createdAt: true,
+        },
+      }),
+    ]);
+
+    // Fetch item names for top searches
+    const topItemIds = topSearches
+      .map((s) => s.resultItemId)
+      .filter((id): id is string => id !== null);
+
+    const topItems = topItemIds.length > 0
+      ? await ctx.db.item.findMany({
+          where: { id: { in: topItemIds } },
+          select: { id: true, name: true, slug: true, category: true },
+        })
+      : [];
+
+    const topSearchesWithNames = topSearches
+      .map((s) => {
+        const item = topItems.find((i) => i.id === s.resultItemId);
+        if (!item) return null;
+        return {
+          name: item.name,
+          slug: item.slug,
+          category: item.category,
+          searchCount: s._count.resultItemId,
+        };
+      })
+      .filter(Boolean);
+
+    return {
+      totalItems,
+      topSearches: topSearchesWithNames,
+      recentItems,
+    };
+  }),
 });

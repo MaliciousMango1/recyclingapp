@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { SearchBar } from "~/components/search-bar";
+import { EngagementCards } from "~/components/engagement-cards";
 
 export default function HomePage() {
   return (
@@ -28,24 +29,8 @@ export default function HomePage() {
       {/* Search */}
       <SearchBar />
 
-      {/* Info Cards */}
-      <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl w-full">
-        <InfoCard
-          emoji="🗑️"
-          title="Curbside Pickup"
-          description="Recycling and landfill carts are collected weekly on your scheduled day."
-        />
-        <InfoCard
-          emoji="📍"
-          title="CHaRM Facility"
-          description="1005 College Ave — accepts electronics, paint, batteries, and more. Wed-Sat 8am-5pm."
-        />
-        <InfoCard
-          emoji="📞"
-          title="Bulk Pickup"
-          description="Schedule large item pickup by calling ACC Solid Waste at 706-613-3512."
-        />
-      </div>
+      {/* Engagement Cards */}
+      <EngagementCards />
 
       {/* Footer */}
       <footer className="mt-20 text-center text-sm text-gray-400 pb-8">
@@ -70,23 +55,5 @@ export default function HomePage() {
         </p>
       </footer>
     </main>
-  );
-}
-
-function InfoCard({
-  emoji,
-  title,
-  description,
-}: {
-  emoji: string;
-  title: string;
-  description: string;
-}) {
-  return (
-    <div className="p-5 bg-white rounded-2xl border border-gray-100 shadow-sm">
-      <span className="text-3xl">{emoji}</span>
-      <h3 className="text-lg font-semibold text-gray-900 mt-2">{title}</h3>
-      <p className="text-sm text-gray-600 mt-1">{description}</p>
-    </div>
   );
 }
