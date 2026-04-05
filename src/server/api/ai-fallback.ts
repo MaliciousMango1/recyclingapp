@@ -1,10 +1,16 @@
 import OpenAI from "openai";
-import { env } from "~/env";
 
-const client = new OpenAI({
-  baseURL: env.AI_API_BASE_URL,
-  apiKey: env.AI_API_KEY,
-});
+let client: OpenAI | null = null;
+
+function getClient(): OpenAI {
+  if (!client) {
+    client = new OpenAI({
+      baseURL: process.env.AI_API_BASE_URL,
+      apiKey: process.env.AI_API_KEY,
+    });
+  }
+  return client;
+}
 
 const SYSTEM_PROMPT = `You are a waste disposal expert specifically for Athens-Clarke County, Georgia. 
 Your job is to tell residents how to properly dispose of items based on ACC's rules.
@@ -53,8 +59,8 @@ export async function getAIDisposalAdvice(
 
     if (sanitized.length < 1) return null;
 
-    const completion = await client.chat.completions.create({
-      model: env.AI_MODEL,
+    const completion = await getClient().chat.completions.create({
+      model: process.env.AI_MODEL ?? "gpt-4o-mini",
       messages: [
         { role: "system", content: SYSTEM_PROMPT },
         {
