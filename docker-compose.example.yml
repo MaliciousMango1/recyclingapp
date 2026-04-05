@@ -8,7 +8,7 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: change-me-to-a-strong-password
-      POSTGRES_DB: athens_recycling
+      POSTGRES_DB: postgres
     ports:
       - "5432:5432"
     volumes:
@@ -24,7 +24,7 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        - NEXT_PUBLIC_APP_URL=https://recycleathens.com
+        - NEXT_PUBLIC_APP_URL=
         - NEXT_PUBLIC_ANALYTICS_SCRIPT_URL=
         - NEXT_PUBLIC_ANALYTICS_SITE_ID=
     restart: unless-stopped
@@ -32,10 +32,11 @@ services:
       - "3000:3000"
     environment:
       AUTH_TRUST_HOST: "true"
+      AUTH_URL: "add your url"
       DATABASE_URL: postgresql://postgres:change-me-to-a-strong-password@db:5432/athens_recycling
       AI_API_BASE_URL: https://openrouter.ai/api/v1
       AI_API_KEY: your-openrouter-api-key
-      AI_MODEL: meta-llama/llama-3.3-70b-instruct:free
+      AI_MODEL: your-ai-model
       AUTH_SECRET: generate-with-openssl-rand-base64-32
       AUTH_GOOGLE_ID: your-google-oauth-client-id
       AUTH_GOOGLE_SECRET: your-google-oauth-client-secret
@@ -55,7 +56,7 @@ services:
              npx tsx prisma/seed.ts &&
              echo '✅ Migration and seed complete'"
     environment:
-      DATABASE_URL: postgresql://postgres:change-me-to-a-strong-password@db:5432/athens_recycling
+      DATABASE_URL: postgresql://postgres:change-me-to-a-strong-password@db:5432/postgres
       SKIP_ENV_VALIDATION: 1
     depends_on:
       db:
