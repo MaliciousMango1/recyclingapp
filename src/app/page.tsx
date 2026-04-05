@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { SearchBar } from "~/components/search-bar";
-import { EngagementCards } from "~/components/engagement-cards";
+import { DidYouKnow } from "~/components/did-you-know";
 
 export default function HomePage() {
   return (
@@ -29,8 +29,8 @@ export default function HomePage() {
       {/* Search */}
       <SearchBar />
 
-      {/* Engagement Cards */}
-      <EngagementCards />
+      {/* Did You Know */}
+      <DidYouKnow />
 
       {/* Footer */}
       <footer className="mt-20 text-center text-sm text-gray-400 pb-8">
