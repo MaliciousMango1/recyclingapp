@@ -4,7 +4,7 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import { db } from "~/server/db";
 import type { Role } from "@prisma/client";
 
-const SEED_ADMIN_EMAIL = "zduclos@gmail.com";
+const SEED_ADMIN_EMAIL = process.env.AUTH_ADMIN_EMAIL;
 
 export const { auth, handlers, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(db),
@@ -22,7 +22,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       if (existing) return true;
 
       // Seed admin gets in without an invite code
-      if (user.email === SEED_ADMIN_EMAIL) return true;
+      if (SEED_ADMIN_EMAIL && user.email === SEED_ADMIN_EMAIL) return true;
 
       // New users need a valid invite code (stored in cookie before OAuth)
       const { cookies } = await import("next/headers");
@@ -55,7 +55,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
   },
   events: {
     async createUser({ user }) {
-      if (user.email === SEED_ADMIN_EMAIL) {
+      if (SEED_ADMIN_EMAIL && user.email === SEED_ADMIN_EMAIL) {
         await db.user.update({
           where: { id: user.id },
           data: { role: "ADMIN" },

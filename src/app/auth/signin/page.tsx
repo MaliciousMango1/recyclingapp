@@ -42,7 +42,7 @@ function SignInContent() {
 
     setLoading(true);
     // Set a short-lived cookie with the invite code before starting OAuth
-    document.cookie = `invite_code=${encodeURIComponent(inviteCode.trim())}; path=/; max-age=600; samesite=lax`;
+    document.cookie = `invite_code=${encodeURIComponent(inviteCode.trim())}; path=/; max-age=600; samesite=lax; secure`;
     signIn("google", { callbackUrl: "/admin" });
   };
 
