@@ -23,10 +23,12 @@ function InviteCodes() {
 
   const createMutation = api.users.createInviteCode.useMutation({
     onSuccess: () => utils.users.listInviteCodes.invalidate(),
+    onError: (err) => alert(err.message),
   });
 
   const revokeMutation = api.users.revokeInviteCode.useMutation({
     onSuccess: () => utils.users.listInviteCodes.invalidate(),
+    onError: (err) => alert(err.message),
   });
 
   const handleCreate = () => {
@@ -162,10 +164,12 @@ function UsersList() {
 
   const updateRoleMutation = api.users.updateUserRole.useMutation({
     onSuccess: () => utils.users.listUsers.invalidate(),
+    onError: (err) => alert(err.message),
   });
 
   const removeMutation = api.users.removeUser.useMutation({
     onSuccess: () => utils.users.listUsers.invalidate(),
+    onError: (err) => alert(err.message),
   });
 
   const handleRemove = (userId: string, name: string | null) => {

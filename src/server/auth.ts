@@ -56,7 +56,6 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
   events: {
     async createUser({ user }) {
       if (user.email === SEED_ADMIN_EMAIL) {
-        // Seed admin — set role directly, no invite code
         await db.user.update({
           where: { id: user.id },
           data: { role: "ADMIN" },
@@ -64,31 +63,27 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         return;
       }
 
-      // Consume the invite code
+      // Consume the invite code and assign the role in a single transaction
       const { cookies } = await import("next/headers");
       const cookieStore = await cookies();
       const code = cookieStore.get("invite_code")?.value;
 
       if (!code) return;
 
-      // Atomically claim the invite code (prevent race conditions)
-      const invite = await db.inviteCode.updateMany({
-        where: { code, usedById: null, revoked: false },
-        data: { usedById: user.id, usedAt: new Date() },
+      await db.$transaction(async (tx) => {
+        const invite = await tx.inviteCode.findUnique({ where: { code } });
+        if (!invite || invite.revoked || invite.usedById) return;
+
+        await tx.inviteCode.update({
+          where: { id: invite.id },
+          data: { usedById: user.id, usedAt: new Date() },
+        });
+
+        await tx.user.update({
+          where: { id: user.id },
+          data: { role: invite.role },
+        });
       });
-
-      if (invite.count > 0) {
-        const inviteCode = await db.inviteCode.findUnique({ where: { code } });
-        if (inviteCode) {
-          await db.user.update({
-            where: { id: user.id },
-            data: { role: inviteCode.role },
-          });
-        }
-      }
-
-      // Clear the invite code cookie
-      cookieStore.delete("invite_code");
     },
   },
 });

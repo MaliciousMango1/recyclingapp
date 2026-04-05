@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { randomBytes } from "crypto";
+import { TRPCError } from "@trpc/server";
 import { createTRPCRouter } from "~/server/api/trpc";
 import { protectedProcedure, adminProcedure } from "~/server/api/admin-auth";
 
@@ -38,7 +39,10 @@ export const usersRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       if (input.userId === ctx.session.user.id) {
-        throw new Error("Cannot change your own role");
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Cannot change your own role",
+        });
       }
       return ctx.db.user.update({
         where: { id: input.userId },
@@ -50,7 +54,10 @@ export const usersRouter = createTRPCRouter({
     .input(z.object({ userId: z.string() }))
     .mutation(async ({ ctx, input }) => {
       if (input.userId === ctx.session.user.id) {
-        throw new Error("Cannot remove yourself");
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Cannot remove yourself",
+        });
       }
       return ctx.db.user.delete({ where: { id: input.userId } });
     }),
