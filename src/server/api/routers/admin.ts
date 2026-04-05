@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { createTRPCRouter } from "~/server/api/trpc";
-import { adminProcedure } from "~/server/api/admin-auth";
+import { protectedProcedure } from "~/server/api/admin-auth";
 
 const disposalCategoryEnum = z.enum([
   "RECYCLE",
@@ -41,13 +41,13 @@ const itemUpdateInput = z.object({
 export const adminRouter = createTRPCRouter({
   // ── Item CRUD ──────────────────────────────────────────
 
-  createItem: adminProcedure
+  createItem: protectedProcedure
     .input(itemCreateInput)
     .mutation(async ({ ctx, input }) => {
       return ctx.db.item.create({ data: input });
     }),
 
-  updateItem: adminProcedure
+  updateItem: protectedProcedure
     .input(itemUpdateInput)
     .mutation(async ({ ctx, input }) => {
       const { id, ...data } = input;
@@ -57,13 +57,13 @@ export const adminRouter = createTRPCRouter({
       });
     }),
 
-  deleteItem: adminProcedure
+  deleteItem: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
       return ctx.db.item.delete({ where: { id: input.id } });
     }),
 
-  listItems: adminProcedure
+  listItems: protectedProcedure
     .input(
       z.object({
         search: z.string().optional(),
@@ -106,7 +106,7 @@ export const adminRouter = createTRPCRouter({
 
   // ── Review Queue ───────────────────────────────────────
 
-  getReviewQueue: adminProcedure
+  getReviewQueue: protectedProcedure
     .input(
       z.object({
         page: z.number().min(1).default(1),
@@ -141,7 +141,7 @@ export const adminRouter = createTRPCRouter({
     }),
 
   // Promote an AI-generated search into a verified item
-  promoteFromQueue: adminProcedure
+  promoteFromQueue: protectedProcedure
     .input(
       z.object({
         query: z.string(),
@@ -167,7 +167,7 @@ export const adminRouter = createTRPCRouter({
     }),
 
   // Dismiss a queue entry (mark as reviewed but don't create item)
-  dismissFromQueue: adminProcedure
+  dismissFromQueue: protectedProcedure
     .input(z.object({ query: z.string() }))
     .mutation(async ({ ctx, input }) => {
       await ctx.db.searchLog.deleteMany({
@@ -178,14 +178,14 @@ export const adminRouter = createTRPCRouter({
 
   // ── Materials ──────────────────────────────────────────
 
-  listMaterials: adminProcedure.query(async ({ ctx }) => {
+  listMaterials: protectedProcedure.query(async ({ ctx }) => {
     return ctx.db.material.findMany({
       include: { _count: { select: { items: true } } },
       orderBy: { name: "asc" },
     });
   }),
 
-  createMaterial: adminProcedure
+  createMaterial: protectedProcedure
     .input(
       z.object({
         name: z.string().min(1),
@@ -199,7 +199,7 @@ export const adminRouter = createTRPCRouter({
 
   // ── Stats ──────────────────────────────────────────────
 
-  getStats: adminProcedure.query(async ({ ctx }) => {
+  getStats: protectedProcedure.query(async ({ ctx }) => {
     const [totalItems, verifiedItems, totalSearches, unmatchedSearches, aiFallbacks, openReports] =
       await Promise.all([
         ctx.db.item.count(),
@@ -241,7 +241,7 @@ export const adminRouter = createTRPCRouter({
 
   // ── Issue Reports ──────────────────────────────────────
 
-  getReports: adminProcedure
+  getReports: protectedProcedure
     .input(
       z.object({
         resolved: z.boolean().default(false),
@@ -270,7 +270,7 @@ export const adminRouter = createTRPCRouter({
       };
     }),
 
-  resolveReport: adminProcedure
+  resolveReport: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
       return ctx.db.issueReport.update({
@@ -279,7 +279,7 @@ export const adminRouter = createTRPCRouter({
       });
     }),
 
-  deleteReport: adminProcedure
+  deleteReport: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
       return ctx.db.issueReport.delete({ where: { id: input.id } });
@@ -287,7 +287,7 @@ export const adminRouter = createTRPCRouter({
 
   // ── Site Settings ──────────────────────────────────────
 
-  getSiteSettings: adminProcedure.query(async ({ ctx }) => {
+  getSiteSettings: protectedProcedure.query(async ({ ctx }) => {
     const settings = await ctx.db.siteSetting.findMany();
     const map: Record<string, string> = {};
     for (const s of settings) {
@@ -298,7 +298,7 @@ export const adminRouter = createTRPCRouter({
     };
   }),
 
-  updateSiteSetting: adminProcedure
+  updateSiteSetting: protectedProcedure
     .input(
       z.object({
         key: z.enum(["showVerifiedDates"]),
