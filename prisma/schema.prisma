@@ -1,0 +1,91 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum DisposalCategory {
+  RECYCLE
+  COMPOST
+  LANDFILL
+  HAZARDOUS
+  SPECIAL_DROPOFF
+  REUSE
+}
+
+model Item {
+  id             String          @id @default(cuid())
+  name           String          @unique
+  slug           String          @unique
+  aliases        String[]        // alternative search terms
+  category       DisposalCategory
+  instructions   String          // specific ACC disposal instructions
+  tips           String?         // optional extra tips
+  imageUrl       String?
+  isVerified     Boolean         @default(true) // false for AI-generated entries
+  lastVerifiedAt DateTime?       // when instructions were last checked against ACC
+  sourceUrl      String?         // link to ACC source
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  materialId     String?
+  material       Material?       @relation(fields: [materialId], references: [id])
+
+  @@index([name])
+  @@index([category])
+}
+
+model Material {
+  id          String   @id @default(cuid())
+  name        String   @unique  // e.g. "Plastics", "Glass", "Electronics"
+  description String?
+  iconName    String?  // icon identifier for the UI
+  items       Item[]
+
+  @@index([name])
+}
+
+model SearchLog {
+  id        String   @id @default(cuid())
+  query     String
+  matched   Boolean  // did we find a curated result?
+  aiFallback Boolean @default(false)
+  resultItemId String?
+  createdAt DateTime @default(now())
+
+  @@index([query])
+  @@index([createdAt])
+}
+
+model CollectionSchedule {
+  id           String   @id @default(cuid())
+  neighborhood String
+  trashDay     String   // e.g. "Monday"
+  recyclingDay String   // e.g. "Monday" (same day in ACC)
+  yardWasteDay String?
+  notes        String?
+
+  @@index([neighborhood])
+}
+
+model IssueReport {
+  id          String   @id @default(cuid())
+  itemSlug    String?  // null for AI-generated results
+  itemName    String   // the item name as displayed
+  reportType  String   // "incorrect", "outdated", "missing", "other"
+  description String   // user-provided description
+  resolved    Boolean  @default(false)
+  resolvedAt  DateTime?
+  createdAt   DateTime @default(now())
+
+  @@index([resolved])
+  @@index([createdAt])
+}
+
+model SiteSetting {
+  key   String @id          // e.g. "showVerifiedDates"
+  value String              // stored as string, parsed by app
+}
