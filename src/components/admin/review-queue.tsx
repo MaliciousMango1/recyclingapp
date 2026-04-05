@@ -1,8 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { api } from "~/lib/trpc";
-import { ItemForm } from "./item-form";
 
 export function ReviewQueue() {
   const [page, setPage] = useState(1);
@@ -144,6 +143,11 @@ function PromoteForm({
     onError: (err) => setError(err.message),
   });
 
+  const aiSuggestion = api.admin.getAISuggestion.useQuery(
+    { query },
+    { staleTime: Infinity, retry: false }
+  );
+
   const slug = query
     .toLowerCase()
     .replace(/[^a-z0-9\s-]/g, "")
@@ -158,6 +162,15 @@ function PromoteForm({
   const [instructions, setInstructions] = useState("");
   const [tips, setTips] = useState("");
   const [sourceUrl, setSourceUrl] = useState("");
+
+  // Pre-fill from AI suggestion when it loads
+  useEffect(() => {
+    if (aiSuggestion.data) {
+      setCategory(aiSuggestion.data.category);
+      setInstructions(aiSuggestion.data.instructions);
+      setTips(aiSuggestion.data.tips ?? "");
+    }
+  }, [aiSuggestion.data]);
 
   const categories = [
     { value: "RECYCLE", label: "Recyclable" },
@@ -200,6 +213,24 @@ function PromoteForm({
         Fill in the disposal details to add this as a verified item. The search
         query will be added as an alias automatically.
       </p>
+
+      {aiSuggestion.isLoading && (
+        <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-xl text-sm text-blue-700">
+          Fetching AI suggestion...
+        </div>
+      )}
+
+      {aiSuggestion.data && (
+        <div className="mb-3 p-3 bg-green-50 border border-green-200 rounded-xl text-sm text-green-700">
+          Pre-filled with AI suggestion (confidence: {aiSuggestion.data.confidence}). Review before promoting.
+        </div>
+      )}
+
+      {aiSuggestion.isError && (
+        <div className="mb-3 p-3 bg-yellow-50 border border-yellow-200 rounded-xl text-sm text-yellow-700">
+          Could not fetch AI suggestion. Fill in manually.
+        </div>
+      )}
 
       {error && (
         <div className="mb-3 p-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700">
