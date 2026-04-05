@@ -137,6 +137,13 @@ function PromoteForm({
   onSuccess: () => void;
   onCancel: () => void;
 }) {
+  const [error, setError] = useState("");
+
+  const promote = api.admin.promoteFromQueue.useMutation({
+    onSuccess,
+    onError: (err) => setError(err.message),
+  });
+
   const slug = query
     .toLowerCase()
     .replace(/[^a-z0-9\s-]/g, "")
@@ -144,18 +151,47 @@ function PromoteForm({
     .replace(/-+/g, "-")
     .trim();
 
-  // Pre-fill the form with the query as the item name
-  // Pass undefined for initialData so ItemForm treats this as a create
-  const defaultValues = {
-    name: query.charAt(0).toUpperCase() + query.slice(1),
-    slug,
-    aliases: [query.toLowerCase()],
-    category: "LANDFILL" as string,
-    instructions: "",
-    tips: null,
-    materialId: null,
-    sourceUrl: null,
-    isVerified: true,
+  const [name, setName] = useState(query.charAt(0).toUpperCase() + query.slice(1));
+  const [slugValue, setSlugValue] = useState(slug);
+  const [aliasesStr, setAliasesStr] = useState(query.toLowerCase());
+  const [category, setCategory] = useState("LANDFILL");
+  const [instructions, setInstructions] = useState("");
+  const [tips, setTips] = useState("");
+  const [sourceUrl, setSourceUrl] = useState("");
+
+  const categories = [
+    { value: "RECYCLE", label: "Recyclable" },
+    { value: "COMPOST", label: "Compostable" },
+    { value: "LANDFILL", label: "Landfill" },
+    { value: "HAZARDOUS", label: "Hazardous" },
+    { value: "SPECIAL_DROPOFF", label: "Special Drop-off" },
+    { value: "REUSE", label: "Reuse / Donate" },
+  ];
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+
+    const aliases = aliasesStr
+      .split(",")
+      .map((a) => a.trim().toLowerCase())
+      .filter(Boolean);
+
+    promote.mutate({
+      query,
+      item: {
+        name,
+        slug: slugValue,
+        aliases,
+        category: category as any,
+        instructions,
+        tips: tips || null,
+        materialId: null,
+        sourceUrl: sourceUrl || null,
+        isVerified: true,
+        lastVerifiedAt: new Date().toISOString(),
+      },
+    });
   };
 
   return (
@@ -164,11 +200,100 @@ function PromoteForm({
         Fill in the disposal details to add this as a verified item. The search
         query will be added as an alias automatically.
       </p>
-      <ItemForm
-        defaultValues={defaultValues}
-        onSuccess={onSuccess}
-        onCancel={onCancel}
-      />
+
+      {error && (
+        <div className="mb-3 p-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700">
+          {error}
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Item Name *</label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => {
+                setName(e.target.value);
+                setSlugValue(
+                  e.target.value.toLowerCase().replace(/[^a-z0-9\s-]/g, "").replace(/\s+/g, "-").replace(/-+/g, "-").trim()
+                );
+              }}
+              required
+              className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-200"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Category *</label>
+            <select
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-white focus:border-green-500 focus:outline-none"
+            >
+              {categories.map((c) => (
+                <option key={c.value} value={c.value}>{c.label}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Aliases (comma-separated)</label>
+          <input
+            type="text"
+            value={aliasesStr}
+            onChange={(e) => setAliasesStr(e.target.value)}
+            className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-200"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Disposal Instructions *</label>
+          <textarea
+            value={instructions}
+            onChange={(e) => setInstructions(e.target.value)}
+            required
+            rows={3}
+            className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-200"
+            placeholder="How should ACC residents dispose of this item?"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Tips (optional)</label>
+          <textarea
+            value={tips}
+            onChange={(e) => setTips(e.target.value)}
+            rows={2}
+            className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-200"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Source URL (optional)</label>
+          <input
+            type="url"
+            value={sourceUrl}
+            onChange={(e) => setSourceUrl(e.target.value)}
+            className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-200"
+            placeholder="https://www.accgov.com/..."
+          />
+        </div>
+
+        <div className="flex gap-3 pt-2">
+          <button
+            type="submit"
+            disabled={promote.isPending}
+            className="px-4 py-2 bg-green-600 text-white rounded-xl font-medium hover:bg-green-700 transition-colors disabled:opacity-50"
+          >
+            {promote.isPending ? "Promoting..." : "Promote to Item"}
+          </button>
+          <button type="button" onClick={onCancel} className="px-4 py-2 border border-gray-200 text-gray-600 rounded-xl hover:bg-gray-50 transition-colors">
+            Cancel
+          </button>
+        </div>
+      </form>
     </div>
   );
 }
