@@ -70,7 +70,7 @@ export const usersRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const code = randomBytes(4).toString("hex").toUpperCase();
+      const code = randomBytes(8).toString("hex").toUpperCase();
       const expiresAt = input.expiresInHours
         ? new Date(Date.now() + input.expiresInHours * 60 * 60 * 1000)
         : null;
