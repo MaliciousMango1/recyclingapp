@@ -22,8 +22,8 @@ export function SearchBar() {
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder='What do you need to throw away? (e.g. "pizza box")'
-          className="w-full px-6 py-4 text-lg rounded-2xl border-2 border-gray-200 
+          placeholder='What do you need to throw away?'
+          className="w-full pl-6 pr-28 py-4 text-lg rounded-2xl border-2 border-gray-200 
                      focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-200 
                      shadow-sm transition-all duration-200 placeholder:text-gray-400"
           aria-label="Search for an item to recycle or dispose of"
