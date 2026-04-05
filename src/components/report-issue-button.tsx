@@ -119,7 +119,7 @@ export function ReportIssueButton({ itemName, itemSlug }: ReportIssueButtonProps
 
       {report.error && (
         <p className="mt-2 text-xs text-red-600">
-          Something went wrong. Please try again or email hello@recycleathens.com.
+          Something went wrong. Please try again or open an issue on GitHub.
         </p>
       )}
     </div>

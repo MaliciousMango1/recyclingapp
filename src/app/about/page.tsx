@@ -104,7 +104,7 @@ export default function AboutPage() {
                 CHaRM Facility
               </a>{" "}
               — Community Hazardous and Reusable Materials center at 1005
-              College Station Road
+              College Ave
             </span>
           </li>
         </ul>
@@ -155,7 +155,7 @@ export default function AboutPage() {
               </a>
             </li>
             <li>
-              <strong>CHaRM Facility:</strong> 1005 College Station Road,
+              <strong>CHaRM Facility:</strong> 1005 College Ave,
               Athens, GA 30605
             </li>
           </ul>
@@ -200,21 +200,14 @@ export default function AboutPage() {
         <p>
           If you find disposal instructions on this site that are outdated or
           incorrect, we want to know. Accurate information is our top priority.
-          You can reach the maintainer of this project at{" "}
+          Please{" "}
           <a
-            href="mailto:hello@recycleathens.com"
-            className="text-green-600 hover:text-green-700 underline"
-          >
-            hello@recycleathens.com
-          </a>{" "}
-          or open an issue on{" "}
-          <a
-            href="https://github.com/MaliciousMango1/recyclingapp"
+            href="https://github.com/MaliciousMango1/recyclingapp/issues"
             target="_blank"
             rel="noopener noreferrer"
             className="text-green-600 hover:text-green-700 underline"
           >
-            GitHub
+            open an issue on GitHub
           </a>
           .
         </p>

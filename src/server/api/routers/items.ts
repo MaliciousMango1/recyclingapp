@@ -165,7 +165,7 @@ export const itemsRouter = createTRPCRouter({
         throw new TRPCError({
           code: "TOO_MANY_REQUESTS",
           message:
-            "Too many reports submitted recently. Please try again later or email hello@recycleathens.com.",
+            "Too many reports submitted recently. Please try again later.",
         });
       }
 

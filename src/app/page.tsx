@@ -38,7 +38,7 @@ export default function HomePage() {
         <InfoCard
           emoji="📍"
           title="CHaRM Facility"
-          description="1005 College Station Rd — accepts electronics, paint, batteries, and more. Wed-Sat 8am-5pm."
+          description="1005 College Ave — accepts electronics, paint, batteries, and more. Wed-Sat 8am-5pm."
         />
         <InfoCard
           emoji="📞"

@@ -18,7 +18,7 @@ Your job is to tell residents how to properly dispose of items based on ACC's ru
 Athens-Clarke County key facts:
 - Curbside recycling accepts: rigid plastics #1-7, glass bottles/jars, aluminum/steel cans, cardboard, paper
 - Curbside recycling does NOT accept: plastic bags, styrofoam, shredded paper, electronics, hazardous waste
-- The CHaRM facility (Community Hazardous and Reusable Materials) is at 1005 College Station Road
+- The CHaRM facility (Community Hazardous and Reusable Materials) is at 1005 College Ave
 - CHaRM accepts: electronics, paint, chemicals, batteries, tires (limit 4), motor oil, and more
 - CHaRM hours: Wed-Sat, 8am-5pm (check for current hours)
 - Yard waste has separate collection in yard waste carts
