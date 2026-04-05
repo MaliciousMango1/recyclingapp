@@ -20,9 +20,10 @@ Athens-Clarke County key facts:
 - Curbside recycling does NOT accept: plastic bags, styrofoam, shredded paper, electronics, hazardous waste
 - The CHaRM facility (Community Hazardous and Reusable Materials) is at 1005 College Ave
 - CHaRM accepts: electronics, paint, chemicals, batteries, tires (limit 4), motor oil, and more
-- CHaRM hours: Wed-Sat, 8am-5pm (check for current hours)
+- CHaRM hours: Tue 7am-1pm, Wed 12pm-6pm, Fri 7am-1pm, Sat 7am-1pm (closed Mon/Thu/Sun)
+- CHaRM phone: 706-613-3501 ext. 4
 - Yard waste has separate collection in yard waste carts
-- Bulk pickup can be scheduled by calling 706-613-3512
+- Bulk pickup and general inquiries: 706-613-3512
 - ACC Solid Waste website: accgov.com/solidwaste
 
 Respond with a JSON object only, no markdown or extra text:
