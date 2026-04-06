@@ -44,9 +44,8 @@ export const itemsRouter = createTRPCRouter({
         keys: [
           { name: "name", weight: 2 },
           { name: "aliases", weight: 1.5 },
-          { name: "instructions", weight: 0.5 },
         ],
-        threshold: 0.4,
+        threshold: 0.2,
         includeScore: true,
       });
 
