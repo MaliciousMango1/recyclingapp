@@ -2,9 +2,49 @@ import Link from "next/link";
 import { SearchBar } from "~/components/search-bar";
 import { DidYouKnow } from "~/components/did-you-know";
 
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      name: "Athens Recycling Guide",
+      url: "https://recycleathens.com",
+      description:
+        "Find out how to properly dispose of any item in Athens-Clarke County, Georgia.",
+      potentialAction: {
+        "@type": "SearchAction",
+        target: {
+          "@type": "EntryPoint",
+          urlTemplate: "https://recycleathens.com/?q={search_term_string}",
+        },
+        "query-input": "required name=search_term_string",
+      },
+    },
+    {
+      "@type": "Organization",
+      name: "Athens Recycling Guide",
+      url: "https://recycleathens.com",
+      description:
+        "A free community tool to help Athens-Clarke County residents dispose of waste properly.",
+      areaServed: {
+        "@type": "City",
+        name: "Athens",
+        containedInPlace: {
+          "@type": "State",
+          name: "Georgia",
+        },
+      },
+    },
+  ],
+};
+
 export default function HomePage() {
   return (
     <main className="flex flex-col items-center px-4 py-12">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* Nav */}
       <nav className="w-full max-w-4xl flex justify-end gap-4 mb-6 text-sm">
         <Link

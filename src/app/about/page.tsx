@@ -5,6 +5,15 @@ export const metadata: Metadata = {
   title: "About | Athens Recycling Guide",
   description:
     "Learn about the Athens Recycling Guide, how our data is sourced, and important disclaimers about waste disposal in Athens-Clarke County.",
+  openGraph: {
+    title: "About | Athens Recycling Guide",
+    description:
+      "Learn about the Athens Recycling Guide, how our data is sourced, and important disclaimers about waste disposal in Athens-Clarke County.",
+    url: "https://recycleathens.com/about",
+  },
+  alternates: {
+    canonical: "https://recycleathens.com/about",
+  },
 };
 
 export default function AboutPage() {
