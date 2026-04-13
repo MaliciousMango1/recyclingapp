@@ -2,7 +2,7 @@
 
 import { api } from "~/lib/trpc";
 
-type Tab = "dashboard" | "items" | "review" | "reports" | "settings" | "users";
+type Tab = "dashboard" | "items" | "review" | "reports" | "settings" | "users" | "searches";
 
 export function AdminDashboard({
   onNavigate,
@@ -36,8 +36,8 @@ export function AdminDashboard({
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         <StatCard label="Total Items" value={data.totalItems} onClick={() => onNavigate("items")} />
         <StatCard label="Verified" value={data.verifiedItems} color="green" onClick={() => onNavigate("items", { verified: true })} />
-        <StatCard label="Total Searches" value={data.totalSearches} />
-        <StatCard label="Match Rate" value={`${data.matchRate}%`} color={data.matchRate > 70 ? "green" : "amber"} />
+        <StatCard label="Total Searches" value={data.totalSearches} onClick={() => onNavigate("searches")} />
+        <StatCard label="Match Rate" value={`${data.matchRate}%`} color={data.matchRate > 70 ? "green" : "amber"} onClick={() => onNavigate("searches")} />
         <StatCard label="Unmatched" value={data.unmatchedSearches} color="red" onClick={() => onNavigate("review")} />
         <StatCard label="AI Fallbacks" value={data.aiFallbacks} color="amber" onClick={() => onNavigate("review")} />
         <StatCard label="Open Reports" value={data.openReports} color={data.openReports > 0 ? "red" : "green"} onClick={() => onNavigate("reports")} />
