@@ -209,6 +209,42 @@ export const adminRouter = createTRPCRouter({
       return ctx.db.material.create({ data: input });
     }),
 
+  // ── Search Logs ────────────────────────────────────────
+
+  getSearchLogs: protectedProcedure
+    .input(
+      z.object({
+        page: z.number().min(1).default(1),
+        perPage: z.number().min(1).max(100).default(50),
+        matched: z.boolean().optional(),
+        aiFallback: z.boolean().optional(),
+        dismissed: z.boolean().optional(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const where: Record<string, unknown> = {};
+      if (input.matched !== undefined) where.matched = input.matched;
+      if (input.aiFallback !== undefined) where.aiFallback = input.aiFallback;
+      if (input.dismissed !== undefined) where.dismissed = input.dismissed;
+
+      const [logs, total] = await Promise.all([
+        ctx.db.searchLog.findMany({
+          where,
+          orderBy: { createdAt: "desc" },
+          skip: (input.page - 1) * input.perPage,
+          take: input.perPage,
+        }),
+        ctx.db.searchLog.count({ where }),
+      ]);
+
+      return {
+        logs,
+        total,
+        pages: Math.ceil(total / input.perPage),
+        page: input.page,
+      };
+    }),
+
   // ── Stats ──────────────────────────────────────────────
 
   getStats: protectedProcedure.query(async ({ ctx }) => {
