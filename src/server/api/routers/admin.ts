@@ -118,25 +118,27 @@ export const adminRouter = createTRPCRouter({
       // Get unmatched searches grouped by query with count
       const logs = await ctx.db.searchLog.groupBy({
         by: ["query"],
-        where: { matched: false, aiFallback: true },
+        where: { matched: false, aiFallback: true, dismissed: false },
         _count: { query: true },
         orderBy: { _count: { query: "desc" } },
         skip: (input.page - 1) * input.perPage,
         take: input.perPage,
       });
 
-      const total = await ctx.db.searchLog.groupBy({
-        by: ["query"],
-        where: { matched: false, aiFallback: true },
-      });
+      const [{ count }] = await ctx.db.$queryRaw<[{ count: bigint }]>`
+        SELECT COUNT(DISTINCT query) AS count
+        FROM "SearchLog"
+        WHERE matched = false AND "aiFallback" = true AND dismissed = false
+      `;
+      const total = Number(count);
 
       return {
         queries: logs.map((l) => ({
           query: l.query,
           searchCount: l._count.query,
         })),
-        total: total.length,
-        pages: Math.ceil(total.length / input.perPage),
+        total,
+        pages: Math.ceil(total / input.perPage),
         page: input.page,
       };
     }),
@@ -171,8 +173,9 @@ export const adminRouter = createTRPCRouter({
   dismissFromQueue: protectedProcedure
     .input(z.object({ query: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      await ctx.db.searchLog.deleteMany({
+      await ctx.db.searchLog.updateMany({
         where: { query: input.query, matched: false, aiFallback: true },
+        data: { dismissed: true },
       });
       return { dismissed: true };
     }),

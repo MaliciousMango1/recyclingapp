@@ -5,9 +5,10 @@ import { api } from "~/lib/trpc";
 import { getCategoryConfig } from "~/lib/categories";
 import { ItemForm } from "./item-form";
 
-export function AdminItemsList() {
+export function AdminItemsList({ initialVerified }: { initialVerified?: boolean }) {
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<string>("");
+  const [verifiedFilter, setVerifiedFilter] = useState<boolean | undefined>(initialVerified);
   const [page, setPage] = useState(1);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [showCreate, setShowCreate] = useState(false);
@@ -17,6 +18,7 @@ export function AdminItemsList() {
   const items = api.admin.listItems.useQuery({
     search: search || undefined,
     category: (categoryFilter || undefined) as "RECYCLE" | "COMPOST" | "LANDFILL" | "HAZARDOUS" | "SPECIAL_DROPOFF" | "REUSE" | undefined,
+    verified: verifiedFilter,
     page,
     perPage: 25,
   });
@@ -53,6 +55,19 @@ export function AdminItemsList() {
               {getCategoryConfig(c).emoji} {getCategoryConfig(c).label}
             </option>
           ))}
+        </select>
+        <select
+          value={verifiedFilter === undefined ? "" : String(verifiedFilter)}
+          onChange={(e) => {
+            setVerifiedFilter(e.target.value === "" ? undefined : e.target.value === "true");
+            setPage(1);
+          }}
+          className="px-4 py-2 border border-gray-200 rounded-xl bg-white
+                     focus:border-green-500 focus:outline-none"
+        >
+          <option value="">All Status</option>
+          <option value="true">Verified</option>
+          <option value="false">Unverified</option>
         </select>
         <button
           onClick={() => setShowCreate(true)}

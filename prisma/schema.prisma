@@ -53,6 +53,7 @@ model SearchLog {
   query     String
   matched   Boolean  // did we find a curated result?
   aiFallback Boolean @default(false)
+  dismissed  Boolean  @default(false)
   resultItemId String?
   createdAt DateTime @default(now())
 

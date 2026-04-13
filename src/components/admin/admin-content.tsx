@@ -14,6 +14,7 @@ type Tab = "dashboard" | "items" | "review" | "reports" | "settings" | "users";
 export function AdminContent() {
   const { data: session } = useSession();
   const [activeTab, setActiveTab] = useState<Tab>("dashboard");
+  const [itemsInitialVerified, setItemsInitialVerified] = useState<boolean | undefined>(undefined);
 
   const isAdmin = session?.user?.role === "ADMIN";
 
@@ -73,7 +74,7 @@ export function AdminContent() {
             {visibleTabs.map((tab) => (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
+                onClick={() => { setItemsInitialVerified(undefined); setActiveTab(tab.id); }}
                 className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
                   activeTab === tab.id
                     ? "border-green-600 text-green-700"
@@ -89,8 +90,15 @@ export function AdminContent() {
 
       {/* Content */}
       <main className="max-w-6xl mx-auto px-4 py-8">
-        {activeTab === "dashboard" && <AdminDashboard />}
-        {activeTab === "items" && <AdminItemsList />}
+        {activeTab === "dashboard" && (
+          <AdminDashboard
+            onNavigate={(tab, opts) => {
+              setItemsInitialVerified(opts?.verified);
+              setActiveTab(tab);
+            }}
+          />
+        )}
+        {activeTab === "items" && <AdminItemsList initialVerified={itemsInitialVerified} />}
         {activeTab === "review" && <ReviewQueue />}
         {activeTab === "reports" && <AdminReports />}
         {activeTab === "settings" && <AdminSettings />}
