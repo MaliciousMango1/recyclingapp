@@ -2,7 +2,13 @@
 
 import { api } from "~/lib/trpc";
 
-export function AdminDashboard() {
+type Tab = "dashboard" | "items" | "review" | "reports" | "settings" | "users";
+
+export function AdminDashboard({
+  onNavigate,
+}: {
+  onNavigate: (tab: Tab, opts?: { verified?: boolean }) => void;
+}) {
   const stats = api.admin.getStats.useQuery(undefined, {
     retry: false,
   });
@@ -28,13 +34,13 @@ export function AdminDashboard() {
     <div>
       {/* Stat Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        <StatCard label="Total Items" value={data.totalItems} />
-        <StatCard label="Verified" value={data.verifiedItems} color="green" />
+        <StatCard label="Total Items" value={data.totalItems} onClick={() => onNavigate("items")} />
+        <StatCard label="Verified" value={data.verifiedItems} color="green" onClick={() => onNavigate("items", { verified: true })} />
         <StatCard label="Total Searches" value={data.totalSearches} />
         <StatCard label="Match Rate" value={`${data.matchRate}%`} color={data.matchRate > 70 ? "green" : "amber"} />
-        <StatCard label="Unmatched" value={data.unmatchedSearches} color="red" />
-        <StatCard label="AI Fallbacks" value={data.aiFallbacks} color="amber" />
-        <StatCard label="Open Reports" value={data.openReports} color={data.openReports > 0 ? "red" : "green"} />
+        <StatCard label="Unmatched" value={data.unmatchedSearches} color="red" onClick={() => onNavigate("review")} />
+        <StatCard label="AI Fallbacks" value={data.aiFallbacks} color="amber" onClick={() => onNavigate("review")} />
+        <StatCard label="Open Reports" value={data.openReports} color={data.openReports > 0 ? "red" : "green"} onClick={() => onNavigate("reports")} />
       </div>
 
       {/* Top Searches */}
@@ -71,10 +77,12 @@ function StatCard({
   label,
   value,
   color = "gray",
+  onClick,
 }: {
   label: string;
   value: string | number;
   color?: "gray" | "green" | "red" | "amber";
+  onClick?: () => void;
 }) {
   const colorMap = {
     gray: "bg-white border-gray-100",
@@ -83,8 +91,19 @@ function StatCard({
     amber: "bg-amber-50 border-amber-100",
   };
 
+  const baseClass = `p-4 rounded-xl border text-left w-full ${colorMap[color]}`;
+
+  if (onClick) {
+    return (
+      <button onClick={onClick} className={`${baseClass} hover:ring-2 hover:ring-offset-1 hover:ring-gray-200 transition-shadow`}>
+        <p className="text-sm text-gray-500">{label}</p>
+        <p className="text-2xl font-bold text-gray-900 mt-1">{value}</p>
+      </button>
+    );
+  }
+
   return (
-    <div className={`p-4 rounded-xl border ${colorMap[color]}`}>
+    <div className={baseClass}>
       <p className="text-sm text-gray-500">{label}</p>
       <p className="text-2xl font-bold text-gray-900 mt-1">{value}</p>
     </div>

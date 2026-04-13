@@ -88,6 +88,7 @@ export function ReviewQueue() {
                     setPromotingQuery(null);
                     utils.admin.getReviewQueue.invalidate();
                     utils.admin.listItems.invalidate();
+                    utils.admin.getStats.invalidate();
                   }}
                   onCancel={() => setPromotingQuery(null)}
                 />
