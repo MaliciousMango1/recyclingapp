@@ -8,8 +8,9 @@ import { ReviewQueue } from "~/components/admin/review-queue";
 import { AdminReports } from "~/components/admin/admin-reports";
 import { AdminSettings } from "~/components/admin/admin-settings";
 import { AdminUsers } from "~/components/admin/admin-users";
+import { AdminSearchLogs } from "~/components/admin/admin-search-logs";
 
-type Tab = "dashboard" | "items" | "review" | "reports" | "settings" | "users";
+type Tab = "dashboard" | "items" | "review" | "reports" | "settings" | "users" | "searches";
 
 export function AdminContent() {
   const { data: session } = useSession();
@@ -22,6 +23,7 @@ export function AdminContent() {
     { id: "dashboard", label: "Dashboard", emoji: "\u{1F4CA}" },
     { id: "items", label: "Items", emoji: "\u{1F4E6}" },
     { id: "review", label: "Review Queue", emoji: "\u{1F50D}" },
+    { id: "searches", label: "Search Logs", emoji: "\u{1F4DC}" },
     { id: "reports", label: "Reports", emoji: "\u{1F6A9}" },
     { id: "settings", label: "Settings", emoji: "\u{2699}\u{FE0F}" },
     { id: "users", label: "Users", emoji: "\u{1F465}", adminOnly: true },
@@ -100,6 +102,7 @@ export function AdminContent() {
         )}
         {activeTab === "items" && <AdminItemsList initialVerified={itemsInitialVerified} />}
         {activeTab === "review" && <ReviewQueue />}
+        {activeTab === "searches" && <AdminSearchLogs />}
         {activeTab === "reports" && <AdminReports />}
         {activeTab === "settings" && <AdminSettings />}
         {activeTab === "users" && isAdmin && <AdminUsers />}
